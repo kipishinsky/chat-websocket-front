@@ -3,25 +3,31 @@ import './App.css'
 
 import io from 'socket.io-client'
 
-//const socket = io('https://chat-websocked-backend.herokuapp.com/')
-const socket = io('http://localhost:3003/')
+const socket = io('https://chat-websocked-backend.herokuapp.com/')
+//const socket = io('http://localhost:3003/')
 
 
 export const App = () => {
 
-	useEffect( () => {
-		//debugger
+	useEffect(() => {
+
 		socket.on('init-messages-published', (messagesServer: any) => {
 			setMessagesInChat(messagesServer)
-		} )
-	}, [] )
+		})
+
+		socket.on('new-client-message-sent', (newMessageOfClient: any) => {
+			setMessagesInChat(stateMessages => [...stateMessages, newMessageOfClient])
+		})
+	}, [])
 
 
 	const [messagesInChat, setMessagesInChat] = useState<Array<any>>([])
 
 	const [sendMessageUser, setSendMessageUser] = useState()
 
-	//debugger
+	const [clientName, setClientName] = useState('Kipish: ')
+
+
 	return (
 
 		<div className="App">
@@ -43,6 +49,15 @@ export const App = () => {
 					socket.emit('client-message-sent', sendMessageUser)
 					setSendMessageUser('')
 				}}>send
+				</button>
+
+
+				<input type="text" value={clientName} onChange={(e) => {
+					setClientName(e.currentTarget.value)
+				}}/>
+				<button onClick={() => {
+					socket.emit('set-client-name', clientName)
+				}}>set my name
 				</button>
 			</div>
 
