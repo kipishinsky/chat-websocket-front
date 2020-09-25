@@ -1,6 +1,7 @@
 .App {
 	display: flex;
 	justify-content: center;
+	align-content: center;
 	flex-direction: column;
 	margin: 0;
 	padding: 0;
@@ -11,4 +12,23 @@
 	border: 1px solid black;
 	height: 300px;
 	width: 300px;
+	overflow-y: scroll;
+}
+
+.items {
+
+	margin: 10px;
+}
+
+.item {
+	margin: 10px;
+
+}
+.btn {
+	width: 100px;
+	margin: 10px;
+}
+
+.input {
+	width: 200px;
 }
