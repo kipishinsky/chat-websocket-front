@@ -1,0 +1,14 @@
+.App {
+	display: flex;
+	justify-content: center;
+	flex-direction: column;
+	margin: 0;
+	padding: 0;
+}
+
+.chat-root-cont {
+	padding: 20px;
+	border: 1px solid black;
+	height: 300px;
+	width: 300px;
+}
