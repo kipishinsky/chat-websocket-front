@@ -33,8 +33,9 @@ const typingUserAdded = (user: any) => ({type: 'user-typing-message', user})
 
 export const createConnection = () => (dispatch: Dispatch) => {
 	api.createConnection()
-	api.subscribe((messages: any) => {
+	api.subscribe((messages: any, fn: () => void) => {
 		dispatch(messageReceived(messages))
+		fn()
 	}, (message: any) => {
 		dispatch(newMessageReceived(message))
 	}, (user: any) => {

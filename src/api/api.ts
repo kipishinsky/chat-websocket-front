@@ -12,7 +12,7 @@ export const api = {
 		this.socket = null
 	},
 	subscribe(
-		initMessagesHandler: (messagesServer: any) => void,
+		initMessagesHandler: (messagesServer: any, fn: () => void) => void,
 		newClientMessageHandler: (newMessageOfClient: any) => void,
 		userTypingHandler: (user: any) => void,
 
@@ -22,7 +22,11 @@ export const api = {
 		this.socket?.on('user-typing-message', userTypingHandler)
 	},
 	sendClientMessage( message: string ) {
-		this.socket?.emit('client-message-sent', message)
+		this.socket?.emit('client-message-sent', message, (error: string | null) => {
+			if (error) {
+				alert(error)
+			}
+		})
 	},
 	sendClientName( name: string ) {
 
