@@ -1,27 +1,32 @@
 import React, {useEffect, useRef, useState} from 'react'
 import './App.css'
 
-import io from 'socket.io-client'
-
-//const socket = io('https://chat-websocked-backend.herokuapp.com/')
-const socket = io('http://localhost:3003/')
-
+import {useDispatch, useSelector} from 'react-redux'
+import {rootReducersType} from './bll/redux-store'
+import {
+	createConnection,
+	destroyConnection,
+	sendClientMessage,
+	sendClientName,
+	typeMessage
+} from './bll/reducer/reducer'
 
 export const App = () => {
 
+	const messagesInChat = useSelector((state: rootReducersType) => state.chat.stateMessages)
+	const typingUsers = useSelector((state: rootReducersType) => state.chat.typingUsers)
+	const dispatch = useDispatch()
+
+
 	useEffect(() => {
-
-		socket.on('init-messages-published', (messagesServer: any) => {
-			setMessagesInChat(messagesServer)
-		})
-
-		socket.on('new-client-message-sent', (newMessageOfClient: any) => {
-			setMessagesInChat(stateMessages => [...stateMessages, newMessageOfClient])
-		})
+		dispatch(createConnection())
+		return () => {
+			dispatch(destroyConnection())
+		}
 	}, [])
 
 
-	const [messagesInChat, setMessagesInChat] = useState<Array<any>>([])
+	//const [messagesInChat, setMessagesInChat] = useState<Array<any>>([])
 
 	const [sendMessageUser, setSendMessageUser] = useState()
 
@@ -56,11 +61,19 @@ export const App = () => {
 				setLastScrollTop(element.scrollTop)
 
 			}}>
-				{messagesInChat.map(m => {
+				{messagesInChat.map((m: any) => {
 					return (
 						<div className="chat-cont" key={m.userId}>
 							<b>{m.userName}</b> {m.userMessage.text}
 							<hr/>
+						</div>
+					)
+				})}
+
+				{typingUsers.map((m: any) => {
+					return (
+						<div className="chat-cont" key={m.userId}>
+							<b>{m.userName}</b> ...
 						</div>
 					)
 				})}
@@ -73,15 +86,19 @@ export const App = () => {
 					<input
 						className={'input'}
 						value={sendMessageUser}
+						onKeyPress={ () => {
+							debugger
+							dispatch(typeMessage())
+						}}
 						onChange={(e) => {
 							setSendMessageUser(e.currentTarget.value)
 						}}/>
 					<button
 						className={'btn'}
 						onClick={() => {
-							socket.emit('client-message-sent', sendMessageUser)
-							setSendMessageUser('')
-						}}>send
+							debugger
+							dispatch(sendClientMessage(sendMessageUser))
+						}}>send message
 					</button>
 				</div>
 
@@ -96,13 +113,12 @@ export const App = () => {
 					<button
 						className={'btn'}
 						onClick={() => {
-							socket.emit('set-client-name', clientName)
+							dispatch(sendClientName(clientName))
 						}}>set my name
 					</button>
 				</div>
 
 			</div>
-
 		</div>
 	)
 }
